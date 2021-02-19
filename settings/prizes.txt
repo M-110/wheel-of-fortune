@@ -1,0 +1,8 @@
+2020 Kia Sorento,26990
+2020 Honda Civic,23000
+2020 Ford Focus,21000
+trip to France,9000
+trip to Costa Rica,7000
+trip to Alaska,6000
+trip to Spain,9000
+trip to The Bahamas,8000
