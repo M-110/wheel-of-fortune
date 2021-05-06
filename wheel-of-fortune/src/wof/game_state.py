@@ -1,11 +1,22 @@
-from typing import Tuple, Callable
+﻿from typing import Tuple, Callable, NamedTuple
 import random
 import players
 import board
 from wheel import Wheel
 from settings import Settings
-from dialogue import Dialogue
 
+
+
+class Speech(NamedTuple):
+    """
+    Named tuple for storing dialogue information.
+
+    Use instant=True if this dialogue will be displayed before input. No sleep
+    delay will be applied after displaying this dialogue if instant is True.
+    """
+    speaker: str
+    text: str
+    input_displayed: bool = False
 
 class GameState:
     """
@@ -16,15 +27,14 @@ class GameState:
         self._player = players.EMPTY_PLAYER
         self._computer1 = players.EMPTY_PLAYER
         self._computer2 = players.EMPTY_PLAYER
-        self._board = board.empty_board
+        self._board = board.EMPTY_BOARD
         self._wheel = Wheel()
+        self._speech = Speech('', '', False)
         self._current_turn = 0
         self._current_round = 0
         self._is_round_active = False
-        self._dialogue = Dialogue(self)
         self._input_error = ''
 
-    # region Properties
     @property
     def player(self) -> players.Human:
         """Get player"""
@@ -44,6 +54,16 @@ class GameState:
     def board(self) -> board.Board:
         """Get board"""
         return self._board
+    
+    @property
+    def speech(self) -> Speech:
+        """Get or set current speech."""
+        return self._speech
+    
+    @speech.setter
+    def speech(self, speech: Speech):
+        self._speech = speech
+    
 
     @property
     def current_turn(self) -> int:
@@ -61,16 +81,9 @@ class GameState:
         return self._is_round_active
 
     @property
-    def dialogue(self) -> Dialogue:
-        """Get dialogue object"""
-        return self._dialogue
-
-    @property
     def input_error(self) -> str:
         """Get current input error"""
         return self._input_error
-
-    # endregion
 
     def create_human_player(self, human: players.Player):
         self._player = human

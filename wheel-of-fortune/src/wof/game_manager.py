@@ -1,10 +1,10 @@
-from typing import Tuple, Callable
+﻿from typing import Tuple, Callable
 
-from dialogue import Speech
-from game_state import GameState
-import player_input
-import parsers
-import ui
+# from dialogue import Speech
+# from game_state import GameState
+# import player_input
+# import parsers
+# import ui
 import players
 from players import Player
 
@@ -68,6 +68,3 @@ class GameManager:
     def get_input_with_speech(self, speaker: str, text: str, parsers_: Tuple[Callable, ...]) -> str:
         self.game_state.dialogue.new_speech(Speech(speaker, text, input_displayed=True))
         return player_input.get_input(self.game_state, parsers_)
-
-
-game_manager = GameManager()

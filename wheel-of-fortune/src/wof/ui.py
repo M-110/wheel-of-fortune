@@ -1,22 +1,24 @@
-from typing import List, TYPE_CHECKING
+﻿from typing import List, TYPE_CHECKING
 
 GameState = "TypeHintFiller"
 if TYPE_CHECKING:
-    from game_state import GameState
+    pass
+    # from game_state import GameState
 
 
 def draw_ui(game_state: GameState):
-    print(generate_game_ui_string(game_state))
+    """Print the UI."""
+    print(_generate_game_ui_string(game_state))
 
 
-def generate_game_ui_string(game_state: GameState) -> str:
+def _generate_game_ui_string(game_state: GameState) -> str:
     return '\n'.join(_combine_puzzle_and_scoreboard_strings(game_state) +
                      _generate_dialogue_string(game_state) +
                      [game_state.input_error])
 
 
 def _generate_puzzle_board_string(game_state: GameState) -> str:
-    puzzle = game_state.board.get_masked_puzzle()
+    puzzle = game_state.board.masked_puzzle
     category = game_state.board.category
     puzzle_lines = _split_string_into_lines(puzzle)
     puzzle_lines = _vertically_center_lines(puzzle_lines)
@@ -130,8 +132,8 @@ def _combine_puzzle_and_scoreboard_strings(game_state: GameState) -> List[str]:
 # endregion
 
 def _generate_dialogue_string(game_state: GameState) -> List[str]:
-    speaker = game_state.dialogue.current_speech.speaker
-    text = game_state.dialogue.current_text
+    speaker = game_state.speech.speaker
+    text = game_state.speech.text
     speaker_strings = _generate_speaker_string(speaker).split('\n')
     text_strings = _generate_text_string(text).split('\n')
     return [''.join(list(pair)) for pair in zip(speaker_strings, text_strings)]

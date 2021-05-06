@@ -1,0 +1,13 @@
+﻿<< Pat says "Alright, now onto your next puzzle."
+>> Update the game state dialogue and PRINT
+<< Pat asks "What is your guess, Fred?"
+>> Update game state dialogue and PRINT
+>> Ask for an input
+    >> If error:
+        << Update game state and PRINT
+    >> Check if guess is correct
+    >> if it is correct update dialogue, PRINT
+    >> Update CASH
+<< Update game state dialogue and PRINT
+<< Next round
+    
