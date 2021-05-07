@@ -24,9 +24,10 @@ class GameState:
     """
 
     def __init__(self):
-        self._player = players.EMPTY_PLAYER
+        self._human = players.EMPTY_PLAYER
         self._computer1 = players.EMPTY_PLAYER
         self._computer2 = players.EMPTY_PLAYER
+        self._current_player_number = 0
         self._board = board.EMPTY_BOARD
         self._wheel = Wheel()
         self._speech = Speech('', '', False)
@@ -36,9 +37,9 @@ class GameState:
         self._input_error = ''
 
     @property
-    def player(self) -> players.Human:
-        """Get player"""
-        return self._player
+    def human(self) -> players.Human:
+        """Get human"""
+        return self._human
 
     @property
     def computer1(self) -> players.Computer:
@@ -49,7 +50,19 @@ class GameState:
     def computer2(self) -> players.Computer:
         """Get computer 2"""
         return self._computer2
-
+    
+    @property
+    def current_player(self) -> players.Player:
+        """Get current player"""
+        num = self._current_player_number
+        if num == 0:
+            return self._human
+        if num == 1:
+            return self._computer1
+        if num == 2:
+            return self._computer2
+        raise ValueError("Invalid current player number")
+        
     @property
     def board(self) -> board.Board:
         """Get board"""
@@ -84,9 +97,13 @@ class GameState:
     def input_error(self) -> str:
         """Get current input error"""
         return self._input_error
+    
+    def next_player(self):
+        """Set current player to the next player."""
+        self._current_player_number = (self._current_player_number + 1) % 3
 
     def create_human_player(self, human: players.Player):
-        self._player = human
+        self._human = human
 
     def create_computer_players(self, difficulty: int):
         (self._computer1, self._computer2) = players.generate_computer_players(difficulty)

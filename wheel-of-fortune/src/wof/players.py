@@ -4,6 +4,8 @@ from settings import Prize
 from settings import Character
 import random
 
+from src.wof.board import Board
+
 ALPHABET = Settings.ALPHABET
 VOWELS = Settings.VOWELS
 MOST_COMMON_LETTERS = Settings.MOST_COMMON_LETTERS
@@ -107,6 +109,9 @@ class Player:
         self._round_prizes = []
         self._round_cash = 0
 
+    def guess(self, board: Board):
+        return "A"
+
 
 class Human(Player):
     """Human player class.
@@ -143,9 +148,6 @@ class Computer(Player):
 
     def __repr__(self):
         return f'Computer(Character({self.name!r}, {self.bio!r}), {self.difficulty})'
-
-    def guess(self, guessed_letters: List[str], puzzle: str):
-        ...
 
 
 def generate_computer_players(difficulty: int) -> Tuple[Computer, Computer]:

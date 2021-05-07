@@ -1,24 +1,24 @@
-$3500, cash, 3500
-$500, cash, 500
-$550, cash, 550
-$900, cash, 900
-$1000, cash, 1000
-$800, cash, 800
-$500, cash, 500
-$400, cash, 500
-Bankrupt, action, bankrupt
-$800, cash, 800
-$350, cash, 350
-$500, cash, 500
-$900, cash, 900
-Bankrupt, action, bankrupt
-$700, cash, 700
-Free Play, action, bankrupt
-$1000, cash, 1000
-Lose a Turn, action, lose_turn
-$800, cash, 800
-A Trip, action, trip
-$450, cash, 450
-$500, cash, 500
-$300, cash, 300
-Bankrupt, action, bankrupt
+$3500,cash,3500
+$500,cash,500
+$550,cash,550
+$900,cash,900
+$1000,cash,1000
+$800,cash,800
+$500,cash,500
+$400,cash,500
+Bankrupt,action,bankrupt
+$800,cash,800
+$350,cash,350
+$500,cash,500
+$900,cash,900
+Bankrupt,action,bankrupt
+$700,cash,700
+Free Play,action,bankrupt
+$1000,cash,1000
+Lose a Turn,action,lose_turn
+$800,cash,800
+ATrip,action,trip
+$450,cash,450
+$500,cash,500
+$300,cash,300
+Bankrupt,action,bankrupt

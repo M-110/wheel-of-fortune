@@ -1,6 +1,11 @@
 ﻿from src.wof.__main__ import WheelOfFortune, Speech
+from src.wof.parsers import DIFFICULTY_PARSERS
 
 wof = WheelOfFortune()
 
-wof._show_speech(Speech("Pat", "Good evening everyone.", False))
+wof.show_speech(Speech("Pat", "Good evening everyone.", False))
+
+a = wof.spin_wheel()
+b = wof.spin_wheel()
+print(a, b)
 

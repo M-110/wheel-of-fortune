@@ -90,21 +90,21 @@ def _generate_scoreboard_string(game_state: GameState) -> str:
     '♦' displayed next to the player whose turn it is.
     Displays round cash during rounds and total cash between rounds.
     """
-    p1 = game_state.player.name
+    p1 = game_state.human.name
     p2 = game_state.computer1.name
     p3 = game_state.computer2.name
-    turn = game_state.current_turn
+    turn = game_state._current_player_number
     if game_state.is_round_active:
-        c1 = game_state.player.round_cash
+        c1 = game_state.human.round_cash
         c2 = game_state.computer1.round_cash
         c3 = game_state.computer2.round_cash
     else:
-        c1 = game_state.player.total_cash
+        c1 = game_state.human.total_cash
         c2 = game_state.computer1.total_cash
         c3 = game_state.computer2.total_cash
-    a1 = '♦' if turn == 1 else ' '
-    a2 = '♦' if turn == 2 else ' '
-    a3 = '♦' if turn == 3 else ' '
+    a1 = '♦' if turn == 0 else ' '
+    a2 = '♦' if turn == 1 else ' '
+    a3 = '♦' if turn == 2 else ' '
     scoreboard = \
         """═════════════════╗
  {} {}║
