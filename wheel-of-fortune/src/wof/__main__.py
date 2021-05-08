@@ -12,10 +12,10 @@ class WheelOfFortune:
 
     def __init__(self):
         self.game_state = GameState()
-        self.create_players()
+        self.game_state._human = players.Human(self.draw_ui)
+        self.game_state.new_round()
 
-    def create_players(self):
-        self.game_state.create_human_player(players.Human("Lyle", "Hi, my name is Lyle. I live in a tree."))
+    def create_computers(self):
         self.game_state.create_computer_players(5)
         self.game_state.generate_new_board()
 
@@ -25,37 +25,31 @@ class WheelOfFortune:
 
     def draw_ui(self):
         draw_ui(self.game_state)
+        
+    def turn(self):
+        # put this all in a while loop?
+        choice = self.ask_player_round_choice()
+        # if 'spin': spin = current_player.spin(), guess = current_player.guess()
+        # if 'solve': solve_guess = current_player.solve
+        # if 'vowel': subtract money, 
 
-    def get_input(self, parsers_: List[Callable]) -> str:
+    def ask_player_round_choice(self) -> str:
+        """Ask current player whether they want to spin, solve, or buy a vowel.
+        
+        Returns:
+            'spin', 'solve', or 'vowels'
         """
-        Requests user input until input passes the parser requirements.
-        Returns input string.
-        """
-        while error := _parse_input(input_string := input('>>> '), parsers_):
-            self.game_state.update_input_error(error)
-            self.draw_ui()
+        choices = ['solve']
+        if self.game_state.board.vowels_remain \
+                and self.game_state.current_player.round_cash >= 250:
+            choices.append('spin')
+            choices.append('vowels')
+        elif self.game_state.board.letters_remain:
+            choices.append('spin')
+        self.show_speech(Speech('Pat', 'What would you like to do?'))
+        return self.game_state.current_player.\
+            ask_to_spin_solve_or_vowel(self.game_state, choices)
 
-        self.game_state.clear_input_errors()
-        return input_string.strip()
-
-    def ask_player_for_letter(self) -> str:
-        if isinstance(self.game_state.current_player, players.Human):
-            return self.get_input(LETTER_PARSERS)
-        return self.game_state.current_player.guess(self.game_state.board)
-    
     def spin_wheel(self) -> Wedge:
         self.show_speech(Speech("", "Spinning the wheel...", False))
         return self.game_state._wheel.spin()
-    
-        
-
-
-def _parse_input(string_: str, parsers_: List[Callable]) -> str or None:
-    """
-    Loops through parsers. If a parser returns an error, function will
-    return that error as a string.
-    Returns None if parsers found no error.
-    """
-    for parser in parsers_:
-        if error := parser(string_):
-            return error

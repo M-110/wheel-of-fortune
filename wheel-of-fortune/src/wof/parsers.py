@@ -1,4 +1,4 @@
-﻿from typing import Callable, Union
+﻿from typing import Callable, Union, List
 
 
 def len_range_parser_factory(min_len: int = 0, max_len: int = 100) -> Callable:
@@ -74,6 +74,25 @@ def alphanumeric_parser_factory(alpha=True, num=True) -> Callable:
     return alphanumeric
 
 
+def spin_solve_vowel_parser_factory(options: List[str]) -> Callable:
+    """
+    Returns a function which takes a string as input and returns whether any
+    of the options are in it.
+    """
+    if len(options) == 1:
+        option_string = options[0]
+    elif len(options) == 2:
+        option_string = ' or '.join(options)
+    else:
+        option_string = f'{options[0]}, {options[1]}, or {options[2]}'
+        
+    def spin_solve_vowel_parser(string_: str) -> Union[str, None]:
+        """Returns error string if string_ does not contain spin, solve, or vowel."""
+        if all(choice not in string_.lower() for choice in options):
+            return f'Input must include {option_string}'
+    return spin_solve_vowel_parser
+    
+
 NAME_PARSERS = [len_range_parser_factory(2, 12),
                 alphanumeric_parser_factory(alpha=True, num=False)]
 
@@ -83,3 +102,4 @@ DIFFICULTY_PARSERS = [num_range_parser_factory(1, 10)]
 
 LETTER_PARSERS = [len_range_parser_factory(1, 1),
                   alphanumeric_parser_factory(alpha=True, num=False)]
+

@@ -77,7 +77,6 @@ class GameState:
     def speech(self, speech: Speech):
         self._speech = speech
     
-
     @property
     def current_turn(self) -> int:
         """Get current turn"""

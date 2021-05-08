@@ -1,10 +1,11 @@
-﻿from typing import List, Tuple
+﻿from typing import List, Tuple, Callable
 from settings import Settings
 from settings import Prize
 from settings import Character
 import random
 
 from src.wof.board import Board
+from src.wof.parsers import spin_solve_vowel_parser_factory
 
 ALPHABET = Settings.ALPHABET
 VOWELS = Settings.VOWELS
@@ -34,6 +35,9 @@ class Player:
     def __str__(self):
         return f'{self.name}:\n\ttotal cash: {self.total_cash}\n\tround_cash: {self.round_cash}'
 
+    def ask_to_spin_solve_or_vowel(self, game_state, options: List[str]):
+        ...
+    
     @property
     def name(self) -> str:
         """Get the player's name."""
@@ -85,6 +89,11 @@ class Player:
         for prize in self._round_prizes:
             total += prize.value
         return total
+    
+    @property
+    def is_human(self):
+        """Returns true if player is human."""
+        return False
 
     def add_cash(self, amount: int):
         """Adds amount to current round cash."""
@@ -120,14 +129,35 @@ class Human(Player):
         name: name of the player.
         bio: a short bio of the player.
     """
-    def __init__(self, name: str, bio: str):
+    def __init__(self, draw_ui_callback: Callable,  name: str = '', bio: str = ''):
         super().__init__(name, bio)
+        self.draw_ui = draw_ui_callback
 
     def __repr__(self):
         return f'Human({self.name!r}, {self.bio!r})'
+    
+    @property
+    def is_human(self):
+        return True
+
+    def ask_to_spin_solve_or_vowel(self, game_state, choices: List[str]) -> str:
+        parsers = [spin_solve_vowel_parser_factory(choices)]
+        return self._get_input(game_state, parsers)
 
     def guess(self, guessed_letters: List[str], puzzle: str):
         pass
+    
+    def _get_input(self, game_state, parsers_: List[Callable]) -> str:
+        """
+        Requests user input until input passes the parser requirements.
+        Returns input string.
+        """
+        while error := _parse_input(input_string := input('>>> '), parsers_):
+            game_state.update_input_error(error)
+            self.draw_ui()
+
+        game_state.clear_input_errors()
+        return input_string.strip()
 
 
 class Computer(Player):
@@ -149,6 +179,18 @@ class Computer(Player):
     def __repr__(self):
         return f'Computer(Character({self.name!r}, {self.bio!r}), {self.difficulty})'
 
+    def ask_to_spin_solve_or_vowel(self, game_state, choices: List[str]) -> str:
+        """Determine whether the computer wants to spin, solve, or buy a vowel."""
+        if game_state.board.solved_percent > .75:
+            return 'solve'
+        elif 'vowel' in choices:
+            if random.random() > .6:
+                return 'vowel'
+        else:
+            return 'spin'
+                
+        
+
 
 def generate_computer_players(difficulty: int) -> Tuple[Computer, Computer]:
     """Returns a tuple of two computer players with given difficulty and random
@@ -157,6 +199,17 @@ def generate_computer_players(difficulty: int) -> Tuple[Computer, Computer]:
     computer1 = Computer(Settings.CHARACTERS[0], difficulty)
     computer2 = Computer(Settings.CHARACTERS[1], difficulty)
     return computer1, computer2
+
+
+def _parse_input(string_: str, parsers_: List[Callable]) -> str or None:
+    """
+    Loops through parsers. If a parser returns an error, function will
+    return that error as a string.
+    Returns None if parsers found no error.
+    """
+    for parser in parsers_:
+        if error := parser(string_):
+            return error
 
 
 EMPTY_PLAYER = Player('', '')

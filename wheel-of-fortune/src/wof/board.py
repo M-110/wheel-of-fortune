@@ -1,6 +1,7 @@
 ﻿"""
 Board handles the puzzle and guessed letters
 """
+from string import ascii_uppercase
 from typing import List
 
 from settings import Settings, Puzzle
@@ -42,14 +43,38 @@ class Board:
     def guessed_letters(self) -> List[str]:
         """Get a copy of a list of guessed letters."""
         return self._guessed_letters[:]
+
+    @property
+    def vowels_remain(self) -> bool:
+        """True if there are still non-guessed vowels in the puzzle."""
+        return len([char for char in self.puzzle_answer
+                    if char not in self.guessed_letters and
+                    char in "aeiou"]) > 0
     
+    @property
+    def letters_remain(self) -> bool:
+        """True if there are any non-guessed letters in the puzzle."""
+        return len([char for char in self.puzzle_answer
+                    if char not in self.guessed_letters and
+                    char in ascii_uppercase]) > 0
+    
+    @property
+    def solved_percent(self) -> float:
+        """Get the percent of the puzzle that is solved"""
+        total_letters = len([char for char in self.puzzle_answer
+                             if char in ascii_uppercase])
+        total_solved_letters = len([char for char in self.puzzle_answer
+                                   if char in self.guessed_letters])
+        print(self.puzzle_answer)
+        return total_solved_letters / total_letters
+
     @property
     def masked_puzzle(self):
         """Get the puzzle string but hide letters that are not yet guessed using
         the '▓' character."""
         return ''.join(char if (char in self.guessed_letters or not char.isalpha()) else '▓'
                        for char in self.puzzle_answer)
-    
+
     def add_guess(self, letter: str):
         """Adds letter to the board's guessed letters"""
         self._guessed_letters.append(letter.upper())
