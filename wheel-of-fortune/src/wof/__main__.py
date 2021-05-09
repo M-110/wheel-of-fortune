@@ -26,12 +26,51 @@ class WheelOfFortune:
     def draw_ui(self):
         draw_ui(self.game_state)
         
-    def turn(self):
-        # put this all in a while loop?
-        choice = self.ask_player_round_choice()
-        # if 'spin': spin = current_player.spin(), guess = current_player.guess()
-        # if 'solve': solve_guess = current_player.solve
-        # if 'vowel': subtract money, 
+    def player_turn(self):
+        continue_ = True
+        while continue_:
+            choice = self.ask_player_round_choice()
+            
+            if choice == 'solve':
+                puzzle_guess = self.player_solve_puzzle()
+                continue_ = self.check_puzzle_guess(puzzle_guess)
+            elif choice == 'vowel':
+                vowel = self.player_buy_vowel()
+                continue_ = self.check_vowel_guess(vowel)
+            elif choice == 'spin':
+                wedge, continue_ = self.player_spin()
+                if not continue_:
+                    break
+                letter = self.player_guess_letter()
+                continue_ = self.check_letter_guess(letter)
+                
+                
+                
+                
+    def player_solve_puzzle(self) -> str:
+        guess = self.game_state.current_player.solve_puzzle(self.game_state)
+        return guess
+    
+    def check_puzzle_guess(self, puzzle_guess: str) -> bool:
+        pass
+    
+    def player_buy_vowel(self) -> str:
+        vowel = self.game_state.current_player.buy_vowel(self.game_state)
+        return vowel
+    
+    def check_vowel_guess(self, vowel_guess: str) -> bool:
+        pass
+        
+    def player_spin(self) -> Tuple[Wedge, bool]:
+        wedge = self.game_state.wheel.spin()
+        return wedge, True
+    
+    def player_guess_letter(self) -> str:
+        guess = self.game_state.current_player.guess_letter(self.game_state)
+        return guess
+    
+    def check_letter_guess(self, letter: str) -> bool:
+        ...
 
     def ask_player_round_choice(self) -> str:
         """Ask current player whether they want to spin, solve, or buy a vowel.
@@ -39,13 +78,14 @@ class WheelOfFortune:
         Returns:
             'spin', 'solve', or 'vowels'
         """
-        choices = ['solve']
-        if self.game_state.board.vowels_remain \
+        if not self.game_state.board.letters_remain:
+            choices = ['solve']
+        elif self.game_state.board.vowels_remain \
                 and self.game_state.current_player.round_cash >= 250:
-            choices.append('spin')
-            choices.append('vowels')
-        elif self.game_state.board.letters_remain:
-            choices.append('spin')
+            choices = ['spin', 'solve', 'vowel']
+        else:
+            choices = ['spin', 'solve']
+        
         self.show_speech(Speech('Pat', 'What would you like to do?'))
         return self.game_state.current_player.\
             ask_to_spin_solve_or_vowel(self.game_state, choices)

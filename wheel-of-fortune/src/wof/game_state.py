@@ -67,6 +67,11 @@ class GameState:
     def board(self) -> board.Board:
         """Get board"""
         return self._board
+        
+    @property
+    def wheel(self) -> Wheel:
+        """Get wheel."""
+        return self._wheel
     
     @property
     def speech(self) -> Speech:

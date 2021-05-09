@@ -94,10 +94,23 @@ class Player:
     def is_human(self):
         """Returns true if player is human."""
         return False
+    
+    def buy_vowel(self, game_state) -> str:
+        ...
+    
+    def solve_puzzle(self, game_state) -> str:
+        ...
+    
+    def guess_letter(self, game_state) -> str:
+        ...
 
     def add_cash(self, amount: int):
         """Adds amount to current round cash."""
         self._round_cash += amount
+        
+    def subtract_cash(self, amount: int):
+        """Subtracts amount from current round cash."""
+        self._round_cash -= amount
 
     def add_prize(self, prize: Prize):
         """Add prize to round prizes."""
