@@ -71,6 +71,7 @@ def alphanumeric_parser_factory(alpha=True, num=True) -> Callable:
         else:
             if not string_.isnumeric():
                 return 'Input must be a number'
+
     return alphanumeric
 
 
@@ -85,13 +86,33 @@ def spin_solve_vowel_parser_factory(options: List[str]) -> Callable:
         option_string = ' or '.join(options)
     else:
         option_string = f'{options[0]}, {options[1]}, or {options[2]}'
-        
+
     def spin_solve_vowel_parser(string_: str) -> Union[str, None]:
         """Returns error string if string_ does not contain spin, solve, or vowel."""
         if all(choice not in string_.lower() for choice in options):
             return f'Input must include {option_string}'
+
     return spin_solve_vowel_parser
+
+
+def consonant_parser(string_: str) -> Union[str, None]:
+    """Returns error if string is not a consonant."""
+    if string_.lower() not in 'bcdfghjklmnpqrstvwxyz':
+        return 'Input must be a consonant'
     
+    
+def vowel_parser(string_: str) -> Union[str, None]:
+    """Returns error if string is not a vowel."""
+    if string_.lower() not in 'aeiou':
+        return 'Input must be a vowel'
+
+
+def a_or_an(string_: str):
+    if string_.lower() in 'bcdgjkpqtuvwyz':
+        return 'a'
+    else:
+        return 'an'
+
 
 NAME_PARSERS = [len_range_parser_factory(2, 12),
                 alphanumeric_parser_factory(alpha=True, num=False)]
@@ -103,3 +124,10 @@ DIFFICULTY_PARSERS = [num_range_parser_factory(1, 10)]
 LETTER_PARSERS = [len_range_parser_factory(1, 1),
                   alphanumeric_parser_factory(alpha=True, num=False)]
 
+CONSONANT_GUESS_PARSERS = [len_range_parser_factory(1, 1),
+                           consonant_parser]
+
+VOWEL_GUESS_PARSERS = [len_range_parser_factory(1, 1),
+                           vowel_parser]
+
+SOLUTION_GUESS_PARSERS = [len_range_parser_factory(1, 60)]

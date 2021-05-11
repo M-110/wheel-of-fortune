@@ -36,8 +36,12 @@ class Board:
 
     @property
     def puzzle_answer(self) -> str:
-        """Get the full puzzle answer."""
+        """Get or set the full puzzle answer."""
         return self._puzzle_answer
+
+    @puzzle_answer.setter
+    def puzzle_answer(self, answer):
+        self._puzzle_answer = answer
 
     @property
     def guessed_letters(self) -> List[str]:
@@ -48,23 +52,23 @@ class Board:
     def vowels_remain(self) -> bool:
         """True if there are still non-guessed vowels in the puzzle."""
         return len([char for char in self.puzzle_answer
-                    if char not in self.guessed_letters and
-                    char in "aeiou"]) > 0
-    
+                    if (char not in self.guessed_letters and
+                        char in "AEIOU")]) > 0
+
     @property
     def letters_remain(self) -> bool:
         """True if there are any non-guessed letters in the puzzle."""
         return len([char for char in self.puzzle_answer
                     if char not in self.guessed_letters and
                     char in ascii_uppercase]) > 0
-    
+
     @property
     def solved_percent(self) -> float:
         """Get the percent of the puzzle that is solved"""
         total_letters = len([char for char in self.puzzle_answer
                              if char in ascii_uppercase])
         total_solved_letters = len([char for char in self.puzzle_answer
-                                   if char in self.guessed_letters])
+                                    if char in self.guessed_letters])
         print(self.puzzle_answer)
         return total_solved_letters / total_letters
 
@@ -74,6 +78,10 @@ class Board:
         the '▓' character."""
         return ''.join(char if (char in self.guessed_letters or not char.isalpha()) else '▓'
                        for char in self.puzzle_answer)
+    
+    def reveal(self):
+        """Reveals the puzzle fully by adding all letters to guessed letters."""
+        self._guessed_letters = list(ascii_uppercase)
 
     def add_guess(self, letter: str):
         """Adds letter to the board's guessed letters"""
@@ -101,6 +109,15 @@ class Board:
              count of the letter in puzzle
         """
         return self.puzzle_answer.count(letter)
+    
+    def check_if_puzzle_guess_is_right(self, guess: str):
+        """Returns True if puzzle guess was correct."""
+        return reduce_phrase(self.puzzle_answer) == reduce_phrase(guess)
+        
 
+def reduce_phrase(phrase: str) -> str:
+    """Reduce a phrase down to just alphabetical characters and space."""
+    return ''.join([char for char in phrase
+                    if (char.isalpha() or char == ' ')])
 
 EMPTY_BOARD = Board(Puzzle('', ''))

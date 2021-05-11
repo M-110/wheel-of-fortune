@@ -17,7 +17,7 @@ Free Play,action,bankrupt
 $1000,cash,1000
 Lose a Turn,action,lose_turn
 $800,cash,800
-ATrip,action,trip
+A Trip,action,trip
 $450,cash,450
 $500,cash,500
 $300,cash,300

@@ -5,7 +5,8 @@ from settings import Character
 import random
 
 from src.wof.board import Board
-from src.wof.parsers import spin_solve_vowel_parser_factory
+from src.wof.parsers import spin_solve_vowel_parser_factory, CONSONANT_GUESS_PARSERS, VOWEL_GUESS_PARSERS, \
+    SOLUTION_GUESS_PARSERS
 
 ALPHABET = Settings.ALPHABET
 VOWELS = Settings.VOWELS
@@ -21,23 +22,24 @@ class Player:
         bio: a short bio of the player.
     """
 
-    def __init__(self, name: str, bio: str):
+    def __init__(self, game_state, name: str = '', bio: str = ''):
         self._name = name
         self._bio = bio
+        self._game_state = game_state
         self._total_cash = 0
         self._round_cash = 0
         self._total_prizes = []
         self._round_prizes = []
-        
+
     def __repr__(self):
         return f'<{self.__class__.name} name={self.name}>'
-    
+
     def __str__(self):
         return f'{self.name}:\n\ttotal cash: {self.total_cash}\n\tround_cash: {self.round_cash}'
 
-    def ask_to_spin_solve_or_vowel(self, game_state, options: List[str]):
+    def ask_to_spin_solve_or_vowel(self, options: List[str]):
         ...
-    
+
     @property
     def name(self) -> str:
         """Get the player's name."""
@@ -67,7 +69,7 @@ class Player:
     def round_prizes(self):
         """Returns copy to keep original list safe"""
         return [item for item in self._round_prizes]
-    
+
     @property
     def total_score(self) -> int:
         """
@@ -79,7 +81,7 @@ class Player:
         for prize in self._total_prizes:
             total += prize.value
         return total
-    
+
     @property
     def total_round_score(self):
         """
@@ -89,25 +91,25 @@ class Player:
         for prize in self._round_prizes:
             total += prize.value
         return total
-    
+
     @property
     def is_human(self):
         """Returns true if player is human."""
         return False
-    
-    def buy_vowel(self, game_state) -> str:
+
+    def buy_vowel(self) -> str:
         ...
-    
-    def solve_puzzle(self, game_state) -> str:
+
+    def solve_puzzle(self) -> str:
         ...
-    
-    def guess_letter(self, game_state) -> str:
+
+    def guess_letter(self) -> str:
         ...
 
     def add_cash(self, amount: int):
         """Adds amount to current round cash."""
         self._round_cash += amount
-        
+
     def subtract_cash(self, amount: int):
         """Subtracts amount from current round cash."""
         self._round_cash -= amount
@@ -126,13 +128,10 @@ class Player:
         if did_win:
             self._total_prizes = self._total_prizes + self._round_prizes
             self._total_cash += self._round_cash
-            
+
         # Reset round prizes/cash.
         self._round_prizes = []
         self._round_cash = 0
-
-    def guess(self, board: Board):
-        return "A"
 
 
 class Human(Player):
@@ -142,34 +141,50 @@ class Human(Player):
         name: name of the player.
         bio: a short bio of the player.
     """
-    def __init__(self, draw_ui_callback: Callable,  name: str = '', bio: str = ''):
-        super().__init__(name, bio)
-        self.draw_ui = draw_ui_callback
+
+    def __init__(self, game_state, name: str = '', bio: str = ''):
+        super().__init__(game_state, name, bio)
+        self.draw_ui = game_state.draw_ui
 
     def __repr__(self):
         return f'Human({self.name!r}, {self.bio!r})'
-    
+
     @property
     def is_human(self):
         return True
 
-    def ask_to_spin_solve_or_vowel(self, game_state, choices: List[str]) -> str:
-        parsers = [spin_solve_vowel_parser_factory(choices)]
-        return self._get_input(game_state, parsers)
+    def buy_vowel(self) -> str:
+        """Request player input for a vowel to buy."""
+        return self._get_input(VOWEL_GUESS_PARSERS).upper()
 
-    def guess(self, guessed_letters: List[str], puzzle: str):
-        pass
-    
-    def _get_input(self, game_state, parsers_: List[Callable]) -> str:
+    def solve_puzzle(self) -> str:
+        """Request player input for a puzzle to solve"""
+        return self._get_input(SOLUTION_GUESS_PARSERS).upper().strip()
+
+    def guess_letter(self) -> str:
+        """Request player input for a letter to guess."""
+        return self._get_input(CONSONANT_GUESS_PARSERS).upper()
+
+    def ask_to_spin_solve_or_vowel(self, choices: List[str]) -> str:
+        parsers = [spin_solve_vowel_parser_factory(choices)]
+        answer = self._get_input(parsers)
+        if 'spin' in answer.lower() and 'spin' in choices:
+            return 'spin'
+        elif 'vowel' in answer.lower() and 'vowel' in choices:
+            return 'vowel'
+        else:
+            return 'solve'
+
+    def _get_input(self, parsers_: List[Callable]) -> str:
         """
         Requests user input until input passes the parser requirements.
         Returns input string.
         """
         while error := _parse_input(input_string := input('>>> '), parsers_):
-            game_state.update_input_error(error)
+            self._game_state.update_input_error(error)
             self.draw_ui()
 
-        game_state.clear_input_errors()
+        self._game_state.clear_input_errors()
         return input_string.strip()
 
 
@@ -180,8 +195,9 @@ class Computer(Player):
         character: The character profile of the computer.
         difficulty: The difficulty level of the computer.
     """
-    def __init__(self, character: Character, difficulty: int):
-        super().__init__(character.name, character.bio)
+
+    def __init__(self, game_state, character: Character, difficulty: int):
+        super().__init__(game_state, character.name, character.bio)
         self._difficulty = difficulty
 
     @property
@@ -192,25 +208,23 @@ class Computer(Player):
     def __repr__(self):
         return f'Computer(Character({self.name!r}, {self.bio!r}), {self.difficulty})'
 
-    def ask_to_spin_solve_or_vowel(self, game_state, choices: List[str]) -> str:
+    def ask_to_spin_solve_or_vowel(self, choices: List[str]) -> str:
         """Determine whether the computer wants to spin, solve, or buy a vowel."""
-        if game_state.board.solved_percent > .75:
+        if self._game_state.board.solved_percent > .75:
             return 'solve'
         elif 'vowel' in choices:
             if random.random() > .6:
                 return 'vowel'
         else:
             return 'spin'
-                
-        
 
 
-def generate_computer_players(difficulty: int) -> Tuple[Computer, Computer]:
+def generate_computer_players(game_state, difficulty: int) -> Tuple[Computer, Computer]:
     """Returns a tuple of two computer players with given difficulty and random
     character name/bios."""
     random.shuffle(Settings.CHARACTERS)
-    computer1 = Computer(Settings.CHARACTERS[0], difficulty)
-    computer2 = Computer(Settings.CHARACTERS[1], difficulty)
+    computer1 = Computer(game_state, Settings.CHARACTERS[0], difficulty)
+    computer2 = Computer(game_state, Settings.CHARACTERS[1], difficulty)
     return computer1, computer2
 
 
