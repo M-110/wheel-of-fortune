@@ -25,7 +25,7 @@ class WheelOfFortune:
     def show_speech(self, name, text, input_displayed=False, delay=True):
         self.game_state.speech = Speech(name, text, input_displayed, delay)
         # draw_ui(self.game_state)
-        
+
     def round(self):
         self.game_state.start_round()
         while self.player_turn():
@@ -34,9 +34,12 @@ class WheelOfFortune:
         self.game_state.current_player.end_round_update(True)
         for player in self.game_state.inactive_players:
             player.end_round_update(False)
-        self.draw_ui()
+        self.show_speech('Pat',
+                         Settings.random_phrase('round_winner')
+                         .format(name=self.game_state.current_player.name,
+                                 cash=self.game_state.current_player.total_score),
+                         delay=False)
         time.sleep(3)
-            
 
     def player_turn(self):
         """Returns False if puzzle has been solved and round is over.
@@ -117,7 +120,7 @@ class WheelOfFortune:
     def check_puzzle_guess(self, puzzle_guess: str) -> bool:
         """Returns True if the puzzle guess is correct."""
         is_correct = self.game_state.board.check_if_puzzle_guess_is_right(puzzle_guess)
-        
+
         if is_correct:
             self.show_speech('Pat', Settings.random_phrase('correct_solve'))
         else:
@@ -196,6 +199,7 @@ class WheelOfFortune:
                                       board.puzzle_answer[i + 1:]
                 self.draw_ui()
                 time.sleep(1)
+        time.sleep(1)
 
         # Replace the highlight with the actual letter
         board.puzzle_answer = board.puzzle_answer.replace('░', letter)
@@ -210,12 +214,13 @@ class WheelOfFortune:
             self.game_state.current_player.add_cash(int(wedge.value) * letter_count)
         elif wedge.type == "trip":
             self.game_state.current_player.add_prize(wedge.value)
-            
+
     def reveal_puzzle(self):
-        self.show_speech('', f'{self.game_state.current_player.name} wins the round.')
         self.game_state.board.reveal()
-        self.draw_ui()
+        self.show_speech('',
+                         f'{self.game_state.current_player.name} wins the round.',
+                         delay=False)
         time.sleep(3)
-        
+
     def reward_puzzle(self):
         self.game_state

@@ -36,7 +36,7 @@ def _split_string_into_lines(puzzle: str) -> List[str]:
     words = puzzle.split()
     for i in range(1, len(words)):
         substring_a, substring_b = ' '.join(words[:-i]), ' '.join(words[-i:])
-        if len(substring_a) <= 12:
+        if len(substring_a) <= 12 and substring_b:
             return [substring_a] + _split_string_into_lines(substring_b)
 
 

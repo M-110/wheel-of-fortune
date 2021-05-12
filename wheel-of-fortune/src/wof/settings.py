@@ -80,7 +80,7 @@ PHRASE_DICT = {'spin': ["I'd like to spin, Pat.",
                             "BANKRUPT!"],
                'lose_turn': ["LOSE A TURN.",
                              "Sorry, you landed on LOSE A TURN..",
-                             'Uh oh, LOSE A TURN.'
+                             'Uh oh, LOSE A TURN.',
                              "You've landed on LOSE A TURN."],
                'trip': ["You landed on a trip."],
                'duplicate_letter': ["No I'm sorry, '{}' has already been called.",
@@ -98,18 +98,19 @@ PHRASE_DICT = {'spin': ["I'd like to spin, Pat.",
                'correct_guess_multi': ["{count} '{letter}'.",
                                        "Yes, there are {count} '{letter}'.",
                                        "Yep, {count} '{letter}'.",
-                                       "Wow, {count} '{letter}'."
+                                       "Wow, {count} '{letter}'.",
                                        "We have {count} '{letter}'."],
                'correct_solve': ['Yep, you got it.',
                                  "Yep, that's it",
-                                 'Well done, you got it.'
+                                 'Well done, you got it.',
                                  "Wow, great job. That's correct.",
                                  "Yes, that is the answer."],
                'failed_solve': ["No, I'm sorry. That's not correct.",
-                                "Nope, that is not the answer."
+                                "Nope, that is not the answer.",
                                 "No, not quite what we were looking for.",
                                 "That is not correct.",
-                                "That is not the answer."]}
+                                "That is not the answer."],
+               'round_winner': ["That brings {name}'s total to ${cash}."]}
 
 
 class Settings:
