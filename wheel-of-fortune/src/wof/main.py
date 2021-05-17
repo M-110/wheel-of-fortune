@@ -14,7 +14,7 @@ class WheelOfFortune:
     def __init__(self):
         self.game_state = GameState()
         print('')
-        self.draw_ui = self.game_state.draw_ui
+        self.draw_ui = self.game_state.draw_ui_function
         self.game_state._human = players.Human(self.game_state, 'Lyle')
         self.game_state.new_round()
 

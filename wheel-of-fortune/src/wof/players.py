@@ -37,9 +37,6 @@ class Player:
     def __str__(self):
         return f'{self.name}:\n\ttotal cash: {self.total_cash}\n\tround_cash: {self.round_cash}'
 
-    def ask_to_spin_solve_or_vowel(self, options: List[str]):
-        ...
-
     @property
     def name(self) -> str:
         """Get the player's name."""
@@ -94,16 +91,31 @@ class Player:
 
     @property
     def is_human(self):
-        """Returns true if player is human."""
-        return False
+        """Returns True if player is human."""
+        return NotImplemented
+
+    def ask_to_spin_solve_or_vowel(self, choices: List[str]):
+        """Player returns a choice of whether to spin, solve or buy a vowel.
+        
+        Args:
+            choices: List of valid choices the player can choose. The possible
+            values are  'spin', 'vowel' and 'solve'.
+        
+        Returns:
+            The player's choice: 'spin', 'vowel', or 'solve'
+        """
+        ...
 
     def buy_vowel(self) -> str:
+        """Player returns a vowel guess."""
         ...
 
     def solve_puzzle(self) -> str:
+        """Player returns a puzzle solution guess."""
         ...
 
     def guess_letter(self) -> str:
+        """Player returns a consonant letter guess."""
         ...
 
     def add_cash(self, amount: int):
@@ -144,13 +156,14 @@ class Human(Player):
 
     def __init__(self, game_state, name: str = '', bio: str = ''):
         super().__init__(game_state, name, bio)
-        self.draw_ui = game_state.draw_ui
+        self.draw_ui = game_state.draw_ui_function
 
     def __repr__(self):
         return f'Human({self.name!r}, {self.bio!r})'
 
     @property
     def is_human(self):
+        """Returns True indicating this a Human instance."""
         return True
 
     def buy_vowel(self) -> str:
@@ -166,6 +179,16 @@ class Human(Player):
         return self._get_input(CONSONANT_GUESS_PARSERS).upper()
 
     def ask_to_spin_solve_or_vowel(self, choices: List[str]) -> str:
+        """Requests input from the player about whether they'd like to spin,
+        buy a vowel, or solve the puzzle.
+        
+        Args:
+            choices: List of valid choices the player can choose. The possible
+            values are  'spin', 'vowel' and 'solve'.
+        
+        Returns:
+            The player's choice: 'spin', 'vowel', or 'solve'
+        """
         parsers = [spin_solve_vowel_parser_factory(choices)]
         answer = self._get_input(parsers)
         if 'spin' in answer.lower() and 'spin' in choices:
@@ -199,14 +222,19 @@ class Computer(Player):
     def __init__(self, game_state, character: Character, difficulty: int):
         super().__init__(game_state, character.name, character.bio)
         self._difficulty = difficulty
+        
+    def __repr__(self):
+        return f'Computer(Character({self.name!r}, {self.bio!r}), {self.difficulty})'
 
     @property
     def difficulty(self) -> int:
         """Get computer difficulty."""
         return self._difficulty
 
-    def __repr__(self):
-        return f'Computer(Character({self.name!r}, {self.bio!r}), {self.difficulty})'
+    @property
+    def is_human(self):
+        """Returns False because this is a computer."""
+        return False
 
     def ask_to_spin_solve_or_vowel(self, choices: List[str]) -> str:
         """Determine whether the computer wants to spin, solve, or buy a vowel."""

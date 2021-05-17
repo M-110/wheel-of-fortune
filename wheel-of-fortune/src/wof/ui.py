@@ -12,12 +12,15 @@ def draw_ui(game_state: GameState):
 
 
 def _generate_game_ui_string(game_state: GameState) -> str:
+    """Generates the complete string which will be used as the UI."""
     return '\n'.join(_combine_puzzle_and_scoreboard_strings(game_state) +
                      _generate_dialogue_string(game_state) +
                      [game_state.input_error])
 
 
 def _generate_puzzle_board_string(game_state: GameState) -> str:
+    """Generates the portion of the UI string responsible for displaying
+    the current board state and the category."""
     puzzle = game_state.board.masked_puzzle
     category = game_state.board.category
     puzzle_lines = _split_string_into_lines(puzzle)
@@ -27,9 +30,8 @@ def _generate_puzzle_board_string(game_state: GameState) -> str:
 
 
 def _split_string_into_lines(puzzle: str) -> List[str]:
-    """
-    Split string into rows of max length 12 using a recursive algorithm.
-    """
+    """Split string into rows of max length 12 using a recursive algorithm.
+    This is used to fit the words to the width of the board."""
     if len(puzzle) < 13:
         return [puzzle]
 
@@ -41,10 +43,8 @@ def _split_string_into_lines(puzzle: str) -> List[str]:
 
 
 def _vertically_center_lines(puzzle_lines: List[str]) -> List[str]:
-    """
-    Improvised ad-hoc math equation used to guarantee there are 4 lines in the list and the lines
-    containing strings are vertically centered.
-    """
+    """A math equation used to guarantee there are 4 lines in the list and the
+    lines containing strings are vertically centered."""
     length = len(puzzle_lines)
     prepend_lines = [''] * ((4 - length) // 2)
     append_lines = [''] * ((5 - length) // 2)
@@ -53,16 +53,14 @@ def _vertically_center_lines(puzzle_lines: List[str]) -> List[str]:
 
 def _horizontally_center_lines(puzzle_lines: List[str]) -> List[str]:
     """
-    Calculates the amount of space, 'extra_space', required to be added to the left of the longest line
-    for the line to be centered on a row of length 12.
-    Adds this space to each line so they all line up.
+    Horizontally center each of the lines in the puzzle.
     """
     extra_space = min((12 - len(line)) // 2 for line in puzzle_lines)
     return [(' ' * extra_space + line).ljust(12) for line in puzzle_lines]
 
 
 def _generate_board_visuals(puzzle_lines: List[str], category: str) -> str:
-    """Insert each puzzle character into the board visual"""
+    """Insert each puzzle character and the category name into the puzzle board."""
     puzzle_string = ''.join(puzzle_lines)
     visual_string = \
         """    ╔═══╦═══╦═══╦═══╦═══╦═══╦═══╦═══╦═══╦═══╦═══╦═══╗     ╔
@@ -80,13 +78,9 @@ def _generate_board_visuals(puzzle_lines: List[str], category: str) -> str:
     return visual_string
 
 
-# endregion
-
-# region Score Board String Generation
-
 def _generate_scoreboard_string(game_state: GameState) -> str:
     """
-    Generates scoreboard that includes each player's name and cash.
+    Generates a scoreboard that includes each player's name and cash.
     '♦' displayed next to the player whose turn it is.
     Displays round cash during rounds and total cash between rounds.
     """
@@ -124,29 +118,32 @@ def _generate_scoreboard_string(game_state: GameState) -> str:
 
 
 def _combine_puzzle_and_scoreboard_strings(game_state: GameState) -> List[str]:
+    """Combines the puzzle board and the scoreboard together by zipping each line
+    together."""
     puzzle = _generate_puzzle_board_string(game_state).split('\n')
     scoreboard = _generate_scoreboard_string(game_state).split('\n')
     return [''.join(list(pair)) for pair in zip(puzzle, scoreboard)]
 
 
-# endregion
-
 def _generate_dialogue_string(game_state: GameState) -> List[str]:
     speaker = game_state.speech.speaker
     text = game_state.speech.text
     speaker_strings = _generate_speaker_string(speaker).split('\n')
-    text_strings = _generate_text_string(text).split('\n')
+    text_strings = _generate_dialogue_text_box(text).split('\n')
     return [''.join(list(pair)) for pair in zip(speaker_strings, text_strings)]
 
 
 def _generate_speaker_string(speaker: str) -> str:
+    """Generates the speaker part of the dialogue box and horizontally aligns
+    the name of the speaker within that box."""
     return f""" ╔═══════════╦═
  ║{speaker.center(11)}║ 
  ╚═══════════╣ 
              ╚═"""
 
 
-def _generate_text_string(text: str) -> str:
+def _generate_dialogue_text_box(text: str) -> str:
+    """Generates the text portion of the dialogue box."""
     line_1 = text
     line_2 = ''
     if len(text) > 60:

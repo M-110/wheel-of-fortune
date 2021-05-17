@@ -120,4 +120,5 @@ def reduce_phrase(phrase: str) -> str:
     return ''.join([char for char in phrase
                     if (char.isalpha() or char == ' ')])
 
+
 EMPTY_BOARD = Board(Puzzle('', ''))

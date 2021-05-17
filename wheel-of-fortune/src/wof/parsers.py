@@ -107,8 +107,10 @@ def vowel_parser(string_: str) -> Union[str, None]:
         return 'Input must be a vowel'
 
 
-def a_or_an(string_: str):
-    if string_.lower() in 'bcdgjkpqtuvwyz':
+def a_or_an(char: str):
+    """Returns the proper article, 'a' or 'an', for the letter of the alphabet,
+    char."""
+    if char.lower() in 'bcdgjkpqtuvwyz':
         return 'a'
     else:
         return 'an'
