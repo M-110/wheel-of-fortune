@@ -13,20 +13,31 @@ class WheelOfFortune:
 
     def __init__(self):
         self.game_state = GameState()
-        print('')
         self.draw_ui = self.game_state.draw_ui_function
         self.game_state._human = players.Human(self.game_state, 'Lyle')
         self.game_state.new_round()
 
     def create_computers(self):
+        """Add computers to the game_state and generate a new board."""
         self.game_state.create_computer_players(5)
         self.game_state.generate_new_board()
 
     def show_speech(self, name, text, input_displayed=False, delay=True):
+        """
+        Display the name and text in the dialogue box of the UI. This will
+        trigger the display to refresh.
+        
+        If input_displayed is True, the UI display will be one line shorter as
+        to provide room for the user input.
+        
+        If delay is True, there will be time delay based on the length of the
+        word count of the text.
+        """
         self.game_state.speech = Speech(name, text, input_displayed, delay)
         # draw_ui(self.game_state)
 
     def round(self):
+        """"""
         self.game_state.start_round()
         while self.player_turn():
             self.game_state.next_player()
@@ -41,9 +52,15 @@ class WheelOfFortune:
                          delay=False)
         time.sleep(3)
 
-    def player_turn(self):
-        """Returns False if puzzle has been solved and round is over.
-        Returns True if player lost their turn"""
+    def player_turn(self) -> bool:
+        """
+        Initiates a turn loop for the current player which repeats the process
+        of spinning, guessing and solving until either the player has correctly
+        solved the the puzzle, they've gotten "bankrupt" or "lose a turn" from
+        spinning, or they've incorrectly guessed a letter.
+        
+        Returns False if puzzle has been solved and round is over.
+        Returns True if player lost their turn."""
         continue_ = True
         print(self.game_state.board.puzzle_answer)
         while continue_:
@@ -216,6 +233,8 @@ class WheelOfFortune:
             self.game_state.current_player.add_prize(wedge.value)
 
     def reveal_puzzle(self):
+        """Reveal the full puzzle, display the winner of the round, and pause
+        for 3 seconds."""
         self.game_state.board.reveal()
         self.show_speech('',
                          f'{self.game_state.current_player.name} wins the round.',
