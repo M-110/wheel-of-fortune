@@ -42,11 +42,11 @@ class WheelOfFortune:
         while self.player_turn():
             self.game_state.next_player()
         self.game_state.end_round()
-        self.game_state.current_player.end_round_update(True)
+        self.game_state.current_player.update_at_round_end(True)
         for player in self.game_state.inactive_players:
-            player.end_round_update(False)
+            player.update_at_round_end(False)
         self.show_speech('Pat',
-                         Settings.random_phrase('round_winner')
+                         Settings.get_random_phrase('round_winner')
                          .format(name=self.game_state.current_player.name,
                                  cash=self.game_state.current_player.total_score),
                          delay=False)
@@ -121,7 +121,7 @@ class WheelOfFortune:
         answer = self.game_state.current_player. \
             ask_to_spin_solve_or_vowel(choices)
         self.show_speech(self.game_state.current_player.name,
-                         Settings.random_phrase(answer))
+                         Settings.get_random_phrase(answer))
         return answer
 
     def player_solve_puzzle(self) -> str:
@@ -139,9 +139,9 @@ class WheelOfFortune:
         is_correct = self.game_state.board.check_if_puzzle_guess_is_right(puzzle_guess)
 
         if is_correct:
-            self.show_speech('Pat', Settings.random_phrase('correct_solve'))
+            self.show_speech('Pat', Settings.get_random_phrase('correct_solve'))
         else:
-            self.show_speech('Pat', Settings.random_phrase('failed_solve'))
+            self.show_speech('Pat', Settings.get_random_phrase('failed_solve'))
         return is_correct
 
     def player_buy_vowel(self) -> str:
@@ -161,10 +161,10 @@ class WheelOfFortune:
         wedge = self.game_state.wheel.spin()
 
         if wedge.value in ['bankrupt', 'lose_turn']:
-            self.show_speech('Pat', Settings.random_phrase(wedge.value))
+            self.show_speech('Pat', Settings.get_random_phrase(wedge.value))
             return wedge, False
         elif wedge.value == 'trip':
-            self.show_speech('Pat', Settings.random_phrase('trip'))
+            self.show_speech('Pat', Settings.get_random_phrase('trip'))
             return wedge, True
         else:
             self.show_speech('Pat', f"You landed on {wedge.text}")
@@ -184,23 +184,23 @@ class WheelOfFortune:
     def check_letter_guess(self, letter: str) -> bool:
         if letter in self.game_state.board.guessed_letters:
             self.show_speech('Pat',
-                             Settings.random_phrase('duplicate_letter')
+                             Settings.get_random_phrase('duplicate_letter')
                              .format(letter))
             return False
         elif letter not in self.game_state.board.puzzle_answer:
             self.show_speech('Pat',
-                             Settings.random_phrase('failed_guess')
+                             Settings.get_random_phrase('failed_guess')
                              .format(letter))
             return False
         else:
             count = self.game_state.board.get_letter_count_in_puzzle(letter)
             if count == 1:
                 self.show_speech('Pat',
-                                 Settings.random_phrase('correct_guess_single')
+                                 Settings.get_random_phrase('correct_guess_single')
                                  .format(aan=a_or_an(letter), letter=letter))
             else:
                 self.show_speech('Pat',
-                                 Settings.random_phrase('correct_guess_multi')
+                                 Settings.get_random_phrase('correct_guess_multi')
                                  .format(count=count,
                                          letter=letter + 's'))
         return letter in self.game_state.board.puzzle_answer

@@ -130,7 +130,7 @@ class Player:
         """Add prize to round prizes."""
         self._round_prizes.append(prize)
 
-    def end_round_update(self, did_win: bool):
+    def update_at_round_end(self, did_win: bool):
         """
         If did_win is True then add the current round cash/prizes to total.
         If False, discard the round cash/prizes.
@@ -237,7 +237,8 @@ class Computer(Player):
         return False
 
     def ask_to_spin_solve_or_vowel(self, choices: List[str]) -> str:
-        """Determine whether the computer wants to spin, solve, or buy a vowel."""
+        """Determine whether the computer wants to spin, solve, or buy a
+        vowel. """
         if self._game_state.board.solved_percent > .75:
             return 'solve'
         elif 'vowel' in choices:
@@ -247,7 +248,8 @@ class Computer(Player):
             return 'spin'
 
 
-def generate_computer_players(game_state, difficulty: int) -> Tuple[Computer, Computer]:
+def generate_computer_players(game_state, difficulty: int) -> Tuple[Computer,
+                                                                    Computer]:
     """Returns a tuple of two computer players with given difficulty and random
     character name/bios."""
     random.shuffle(Settings.CHARACTERS)

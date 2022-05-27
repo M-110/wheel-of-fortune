@@ -57,7 +57,7 @@ def _import_wheel_values():
     return wedge_list
 
 
-def random_phrase(context: str) -> str:
+def get_random_phrase(context: str) -> str:
     """Returns a random phrase that fits in the context"""
     return random.choice(PHRASE_DICT[context])
 
@@ -125,4 +125,4 @@ class Settings:
     BONUS_ROUND_VALUES = [3000] * 12 + [45000] * 4 + [50000] * 3 + [75000] * 2 + \
                          [100000]
     DIALOGUE_SPEED = 1
-    random_phrase = random_phrase
+    random_phrase = get_random_phrase

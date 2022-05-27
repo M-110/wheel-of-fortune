@@ -18,6 +18,14 @@ def _generate_game_ui_string(game_state: GameState) -> str:
                      [game_state.input_error])
 
 
+def _combine_puzzle_and_scoreboard_strings(game_state: GameState) -> List[str]:
+    """Combines the puzzle board and the scoreboard together by zipping each line
+    together."""
+    puzzle = _generate_puzzle_board_string(game_state).split('\n')
+    scoreboard = _generate_scoreboard_string(game_state).split('\n')
+    return [''.join(list(pair)) for pair in zip(puzzle, scoreboard)]
+
+
 def _generate_puzzle_board_string(game_state: GameState) -> str:
     """Generates the portion of the UI string responsible for displaying
     the current board state and the category."""
@@ -60,7 +68,8 @@ def _horizontally_center_lines(puzzle_lines: List[str]) -> List[str]:
 
 
 def _generate_board_visuals(puzzle_lines: List[str], category: str) -> str:
-    """Insert each puzzle character and the category name into the puzzle board."""
+    """Insert each puzzle character and the category name into the puzzle
+    board. """
     puzzle_string = ''.join(puzzle_lines)
     visual_string = \
         """    ╔═══╦═══╦═══╦═══╦═══╦═══╦═══╦═══╦═══╦═══╦═══╦═══╗     ╔
@@ -74,7 +83,8 @@ def _generate_board_visuals(puzzle_lines: List[str], category: str) -> str:
     ╚═══╬═══╩═══╩═══╩═══╩═══╩═══╩═══╩═══╩═══╩═══╬═══╝     ║
         ║{}║         ╚
         ╚═══════════════════════════════════════╝""" \
-            .format(*(char + ' ' for char in puzzle_string), category.center(39))
+            .format(*(char + ' ' for char in puzzle_string),
+                    category.center(39))
     return visual_string
 
 
@@ -115,14 +125,6 @@ def _generate_scoreboard_string(game_state: GameState) -> str:
                     a2, p2.ljust(14), str(c2).ljust(13),
                     a3, p3.ljust(14), str(c3).ljust(13))
     return scoreboard
-
-
-def _combine_puzzle_and_scoreboard_strings(game_state: GameState) -> List[str]:
-    """Combines the puzzle board and the scoreboard together by zipping each line
-    together."""
-    puzzle = _generate_puzzle_board_string(game_state).split('\n')
-    scoreboard = _generate_scoreboard_string(game_state).split('\n')
-    return [''.join(list(pair)) for pair in zip(puzzle, scoreboard)]
 
 
 def _generate_dialogue_string(game_state: GameState) -> List[str]:
