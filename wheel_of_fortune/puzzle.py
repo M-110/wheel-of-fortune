@@ -1,0 +1,2 @@
+﻿class Puzzle:
+    content = "Hello"
